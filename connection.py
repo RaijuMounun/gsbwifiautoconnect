@@ -39,6 +39,7 @@ def connect_to_wifi():
     try:
         response = session.post(url, data=form)
         print_status(response.status_code)
+        return response
     except requests.exceptions.RequestException as e:
         messagebox.showerror("Error", f"Connection error: {e}")
 
