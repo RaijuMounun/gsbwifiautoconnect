@@ -49,19 +49,7 @@ class WindowMain(WindowBase):
             text="",
             image=self.image_connect_button,
             corner_radius=100,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            command=self.connect)
-=======
             command=self.toggle_connection)
->>>>>>> Stashed changes
-=======
-            command=self.toggle_connection)
->>>>>>> Stashed changes
-=======
-            command=self.toggle_connection)
->>>>>>> Stashed changes
 
         self.button_connect.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
 
