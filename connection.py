@@ -20,8 +20,7 @@ def print_status(statuscode):
 
 def connect_to_wifi():
     """Attempts to log in to wifi.gsb.gov.tr."""
-    try:
-        # Read username and password from login_info.json
+    try:  # Read username and password from login_info.json
         with open("login_info.json", "r", encoding="utf-8") as file:
             login_info = json.load(file)
             username = login_info.get("username", "")

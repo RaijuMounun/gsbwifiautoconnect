@@ -1,24 +1,43 @@
 """Contains the necessary classes for the user interface."""
 from tkinter import messagebox
 import json
+from abc import ABC, abstractmethod
 from PIL import Image
 import customtkinter as ctk
-from connection import connect_to_wifi, disconnect_from_wifi
 
 
-class WindowMain:
+class WindowBase(ABC):
+    """Base class for all windows in the application."""
+
+    @abstractmethod
+    def run(self):
+        """Starts the window."""
+
+    @abstractmethod
+    def destroy(self):
+        """Closes the window."""
+
+
+class WindowMain(WindowBase):
     """Creates the main application window."""
-    def __init__(self):
+
+    def __init__(self, connect_callback, disconnect_callback):
         self.root = ctk.CTk()
         self.root.title("GSB Wifi Auto Connect")
         self.root.geometry("600x400")
 
-        self.image_login_info_button_path = "icons/wrench.png"
+        self.connect_callback = connect_callback
+        self.disconnect_callback = disconnect_callback
         self.is_connected = False
+
+        self.image_login_info_button_path = "icons/wrench.png"
         self.image_connect_button_path = ("icons/connected.png" if self.is_connected
                                           else "icons/disconnected.png")
 
-        #region Connect Button
+        self.setup_ui()
+
+    def setup_ui(self):
+        """Sets up the user interface."""
         self.image_connect_button = ctk.CTkImage(
             light_image=Image.open(self.image_connect_button_path),
             dark_image=Image.open(self.image_connect_button_path),
@@ -30,12 +49,14 @@ class WindowMain:
             text="",
             image=self.image_connect_button,
             corner_radius=100,
+<<<<<<< Updated upstream
             command=self.connect)
+=======
+            command=self.toggle_connection)
+>>>>>>> Stashed changes
 
         self.button_connect.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
-        #endregion
 
-        #region Login Info Button
         self.image_login_info = ctk.CTkImage(
             light_image=Image.open(self.image_login_info_button_path),
             dark_image=Image.open(self.image_login_info_button_path),
@@ -51,22 +72,24 @@ class WindowMain:
             command=self.open_login_info_window)
 
         self.button_login_info.place(relx=0.95, rely=0.05, anchor=ctk.NE)
-        #endregion
 
-    def connect(self):
-        """Connects to the Wi-Fi network."""
+    def toggle_connection(self):
+        """Toggles the Wi-Fi connection."""
         if not self.is_connected:
-            connect_to_wifi()  # Attempt to connect
-            self.image_connect_button.configure(light_image=Image.open("icons/connected.png"),
-                                                dark_image=Image.open("icons/connected.png"))
-            self.button_connect.configure(image=self.image_connect_button)
+            self.connect_callback()
+            self.update_button_image("icons/connected.png")
             self.is_connected = True
         else:
-            disconnect_from_wifi()  # Disconnect
-            self.image_connect_button.configure(light_image=Image.open("icons/disconnected.png"),
-                                                dark_image=Image.open("icons/disconnected.png"))
-            self.button_connect.configure(image=self.image_connect_button)
+            self.disconnect_callback()
+            self.update_button_image("icons/disconnected.png")
             self.is_connected = False
+
+    def update_button_image(self, image_path):
+        """Updates the connect button image."""
+        self.image_connect_button.configure(
+            light_image=Image.open(image_path),
+            dark_image=Image.open(image_path))
+        self.button_connect.configure(image=self.image_connect_button)
 
     def open_login_info_window(self):
         """Opens the login information window."""
@@ -76,11 +99,13 @@ class WindowMain:
         """Starts the application by calling the mainloop for the window."""
         self.root.mainloop()
 
+    def destroy(self):
+        """Closes the window."""
+        self.root.destroy()
 
-class WindowLoginInfo:
-    """Creates a window to save login information.
-    The window consists of username and password entry fields and a save-and-close button."""
 
+class WindowLoginInfo(WindowBase):
+    """Creates a window to save login information."""
     def __init__(self, parent):
         self.parent = parent
         self.window = ctk.CTkToplevel(self.parent)
@@ -88,7 +113,10 @@ class WindowLoginInfo:
         self.window.geometry("300x200")
         self.window.attributes("-topmost", True)
 
-        #region Login Info Entries
+        self.setup_ui()
+
+    def setup_ui(self):
+        """Sets up the user interface."""
         self.entry_username = ctk.CTkEntry(
             self.window,
             placeholder_text="Enter your username")
@@ -99,7 +127,6 @@ class WindowLoginInfo:
             show="*",
             placeholder_text="Enter your password")
         self.entry_password.pack(pady=10)
-        #endregion
 
         self.load_login_info()
 
@@ -107,21 +134,17 @@ class WindowLoginInfo:
         button_save.pack(pady=10)
 
     def load_login_info(self):
-        """Loads saved username and password and populates the entry fields."""
+        """Loads saved username and password."""
         try:
             with open("login_info.json", "r", encoding="utf-8") as file:
                 login_info = json.load(file)
                 self.entry_username.insert(0, login_info.get("username", ""))
                 self.entry_password.insert(0, login_info.get("password", ""))
-        except FileNotFoundError:
-            pass
-        except json.JSONDecodeError:
+        except (FileNotFoundError, json.JSONDecodeError):
             pass
 
     def save_and_exit(self):
-        """Saves the username and password and closes the window.
-        Takes no parameters and returns no value."""
-
+        """Saves the username and password and closes the window."""
         username = self.entry_username.get()
         password = self.entry_password.get()
         login_info = {
@@ -133,8 +156,12 @@ class WindowLoginInfo:
             json.dump(login_info, file)
 
         messagebox.showinfo("Info", "Username and password saved!")
-        self.destroy_window()
+        self.destroy()
 
-    def destroy_window(self):
+    def run(self):
+        """Starts the window."""
+        self.window.mainloop()
+
+    def destroy(self):
         """Closes the window."""
         self.window.destroy()
