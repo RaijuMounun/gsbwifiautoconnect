@@ -27,10 +27,9 @@ class WindowMain:
 
         self.button_connect = ctk.CTkButton(
             self.root,
-            text="",  # Placeholder for an icon
+            text="",
             image=self.image_connect_button,
-            font=("Arial", 100),
-            corner_radius=500,
+            corner_radius=100,
             command=self.connect)
 
         self.button_connect.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
@@ -45,7 +44,7 @@ class WindowMain:
 
         self.button_login_info = ctk.CTkButton(
             self.root,
-            text="",  # Placeholder for an icon
+            text="",
             image=self.image_login_info,
             width=30,
             height=30,
