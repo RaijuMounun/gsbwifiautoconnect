@@ -1,6 +1,8 @@
 """Contains the necessary classes for the user interface."""
 from tkinter import messagebox
 import json
+import os
+import sys
 from abc import ABC, abstractmethod
 from PIL import Image
 import customtkinter as ctk
@@ -30,9 +32,9 @@ class WindowMain(WindowBase):
         self.disconnect_callback = disconnect_callback
         self.is_connected = False
 
-        self.image_login_info_button_path = "icons/wrench.png"
-        self.image_connect_button_path = ("icons/connected.png" if self.is_connected
-                                          else "icons/disconnected.png")
+        self.image_login_info_button_path = resource_path("icons/wrench.png")
+        self.image_connect_button_path = resource_path("icons/connected.png" if self.is_connected
+                                                    else "icons/disconnected.png")
 
         self.setup_ui()
 
@@ -74,11 +76,11 @@ class WindowMain(WindowBase):
         if not self.is_connected:
             response = self.connect_callback()
             if response.status_code == 200:
-                self.update_button_image("icons/connected.png")
+                self.update_button_image(resource_path("icons/connected.png"))
                 self.is_connected = True
         else:
             self.disconnect_callback()
-            self.update_button_image("icons/disconnected.png")
+            self.update_button_image(resource_path("icons/disconnected.png"))
             self.is_connected = False
 
     def update_button_image(self, image_path):
@@ -162,3 +164,14 @@ class WindowLoginInfo(WindowBase):
     def destroy(self):
         """Closes the window."""
         self.window.destroy()
+
+
+def resource_path(relative_path):
+    """Get the absolute path to the resource."""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
