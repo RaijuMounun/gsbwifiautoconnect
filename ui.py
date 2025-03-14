@@ -50,7 +50,11 @@ class WindowMain(WindowBase):
             image=self.image_connect_button,
             corner_radius=100,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             command=self.connect)
+=======
+            command=self.toggle_connection)
+>>>>>>> Stashed changes
 =======
             command=self.toggle_connection)
 >>>>>>> Stashed changes
