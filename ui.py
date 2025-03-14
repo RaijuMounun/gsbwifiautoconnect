@@ -72,9 +72,10 @@ class WindowMain(WindowBase):
     def toggle_connection(self):
         """Toggles the Wi-Fi connection."""
         if not self.is_connected:
-            self.connect_callback()
-            self.update_button_image("icons/connected.png")
-            self.is_connected = True
+            response = self.connect_callback()
+            if response.status_code == 200:
+                self.update_button_image("icons/connected.png")
+                self.is_connected = True
         else:
             self.disconnect_callback()
             self.update_button_image("icons/disconnected.png")
