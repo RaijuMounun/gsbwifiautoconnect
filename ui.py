@@ -51,7 +51,11 @@ class WindowMain(WindowBase):
             corner_radius=100,
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             command=self.connect)
+=======
+            command=self.toggle_connection)
+>>>>>>> Stashed changes
 =======
             command=self.toggle_connection)
 >>>>>>> Stashed changes
