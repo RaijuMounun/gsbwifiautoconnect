@@ -82,10 +82,10 @@ Bu sayede anadili Türkçe olanlar için kod daha anlaşılır ve bakımı daha 
 4. Bağlantı başarılı olduğunda, program otomatik olarak kendini kapatır.
 
 Kullanıcı bilgilerinizi tutan JSON dosyası .exe dosyasının bulunduğu konuma oluşturuluyor. O yüzden tavsiyem programlarınızı tuttuğunuz klasöre, GsbWifiAutoConnect için de bir klasör oluşturup .exe dosyasını orada tutmanız. Masaüstü kısayolu oluşturmak için: 
-   1- .exe dosyasına sağ tıklayın
-   2- Açılan pencerede en altta "Daha fazla seçenek göster" tuşuna tıklayın.
-   3- Açılan pencerede 'Gönder' kısmına gelin.
-   4- Açılan küçük pencerede "Masaüstü (kısayol oluştur)" seçeneğini seçin.
+   1. .exe dosyasına sağ tıklayın
+   2. Açılan pencerede en altta "Daha fazla seçenek göster" tuşuna tıklayın.
+   3. Açılan pencerede 'Gönder' kısmına gelin.
+   4. Açılan küçük pencerede "Masaüstü (kısayol oluştur)" seçeneğini seçin.
 
 ## Lisans
 
