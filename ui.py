@@ -87,7 +87,7 @@ class WindowMain(WindowBase):
         # Save button
         button_save = ctk.CTkButton(
             frame_login, 
-            text="Save Credentials", 
+            text="Save", 
             command=self.save_login_info)
         button_save.pack(pady=(10, 20), padx=10)
         
