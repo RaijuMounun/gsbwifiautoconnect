@@ -18,6 +18,7 @@ Bu süreç genellikle çok yavaş ilerliyor çünkü:
 
 ## Özellikler
 
+- Tamamen Türkçe kullanıcı arayüzü
 - Basit ve kullanıcı dostu arayüz
 - Giriş bilgilerini güvenli bir şekilde saklama
 - Tek tıkla WiFi bağlantısı (tarayıcı açmadan)
@@ -31,10 +32,10 @@ Bu süreç genellikle çok yavaş ilerliyor çünkü:
 1. [Releases](https://github.com/RaijuMounun/gsbwifiautoconnect/releases) sayfasından v0.2 sürümünü indirin
 2. İndirdiğiniz .exe dosyasını çalıştırın (Herhangi bir kurulum gerekmez)
 3. Kullanıcı adınızı ve parolanızı girin
-4. Bilgileri kaydetmek için "Save" düğmesine tıklayın
-5. WiFi'a bağlanmak için "Connect" düğmesine tıklayın
+4. Bilgileri kaydetmek için "Kaydet" düğmesine tıklayın
+5. WiFi'a bağlanmak için bağlantı düğmesine tıklayın
 
-**Not**: Exe dosyası tüm gerekli bileşenleri içerir, ayrıca Python veya başka bir program yüklemeniz gerekmez.
+**Not**: Exe dosyası tüm gerekli bileşenleri içerir, ayrıca Python veya başka bir program yüklemeniz gerekmez. Programı çalıştırdığınızda uyarı verebilir. Bu tarz programların imza süreçleri falan çok sorunlu. "Yine de çalıştır" diyerek programı çalıştırabilirsiniz.
 
 ### Kaynak Kod İle Geliştirme (Geliştiriciler İçin)
 
@@ -65,8 +66,13 @@ Eğer uygulamayı kendiniz geliştirmek veya değiştirmek istiyorsanız:
    python main.py
    ```
 
+## Proje kodları ve arayüzü Türkçe
 
+- **Türkçe Arayüz**: Önceki sürümde Ingilizce olan uygulama arayüzünü Türkçe'ye çevirdim.
+- **Türkçe Kod Yorumları**: Önceki sürümde Ingilizce olan tüm kod yorumlarını ve dokümantasyonu Türkçe'ye çevirdim.
+- **Bölge İşaretçileri**: Kodun anlaşılması daha kolay olsun diye içerisinde `#region` ve `#endregion` etiketleri ile bölümler oluşturdum.
 
+Bu sayede anadili Türkçe olanlar için kod daha anlaşılır ve bakımı daha kolay hale geldi. 
 
 ## Nasıl Çalışır?
 
@@ -78,7 +84,7 @@ Eğer uygulamayı kendiniz geliştirmek veya değiştirmek istiyorsanız:
    3- Açılan pencerede 'Gönder' kısmına gelin.
    4- Açılan küçük pencerede "Masaüstü (kısayol oluştur)" seçeneğini seçin.
 3. Bağlan düğmesine bastığınızda, uygulama otomatik olarak GSB WiFi portalına giriş yapar
-4. Bağlantı başarılı olduğunda, düğme rengi değişerek sizi bilgilendirir
+4. Bağlantı başarılı olduğunda, program otomatik olarak kendini kapatır.
 
 ## Lisans
 
