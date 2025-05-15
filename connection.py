@@ -1,9 +1,9 @@
-"""This module allows logging in to wifi.gsb.gov.tr.
+"""Bu modül wifi.gsb.gov.tr'ye giriş yapmayı sağlar.
 
-This module provides functionality to authenticate with the GSB WiFi portal
-through its login endpoint.
+Bu modül, GSB WiFi portalına giriş endpoint'i aracılığıyla kimlik doğrulama 
+işlevselliğini sağlar.
 """
-#region Imports
+#region Import'lar
 import json
 from tkinter import messagebox
 import requests
@@ -12,14 +12,14 @@ from PIL import Image
 #endregion
 
 
-#region Status Handling
+#region Durum İşleme
 def print_status(statuscode: int) -> None:
-    """Prints a user-friendly message based on the HTTP status code.
+    """HTTP durum koduna göre kullanıcı dostu bir mesaj yazdırır.
     
-    Args:
-        statuscode: The HTTP status code returned by the server
+    Argümanlar:
+        statuscode: Sunucudan dönen HTTP durum kodu
         
-    Returns:
+    Döndürür:
         None
     """
     statuscodes: Dict[int, str] = {
@@ -35,12 +35,12 @@ def print_status(statuscode: int) -> None:
 #endregion
 
 
-#region Login Info Management
+#region Giriş Bilgileri Yönetimi
 def load_login_info() -> Dict[str, str]:
-    """Loads saved username and password from the JSON file.
+    """JSON dosyasından kaydedilmiş kullanıcı adı ve parolayı yükler.
     
-    Returns:
-        Dict[str, str]: Dictionary containing username and password
+    Döndürür:
+        Dict[str, str]: Kullanıcı adı ve parola içeren dictionary
     """
     try:
         with open("login_info.json", "r", encoding="utf-8") as file:
@@ -51,15 +51,15 @@ def load_login_info() -> Dict[str, str]:
 
 
 def save_login_info(username: str, password: str, show_message: bool = True) -> bool:
-    """Saves the username and password to the JSON file.
+    """Kullanıcı adı ve parolayı JSON dosyasına kaydeder.
     
-    Args:
-        username: The username to save
-        password: The password to save
-        show_message: Whether to show a success message
+    Argümanlar:
+        username: Kaydedilecek kullanıcı adı
+        password: Kaydedilecek parola
+        show_message: Başarı mesajı gösterilip gösterilmeyeceği
         
-    Returns:
-        bool: True if credentials were saved successfully, False otherwise
+    Döndürür:
+        bool: Kimlik bilgileri başarıyla kaydedildiyse True, aksi halde False
     """
     if not username or not password:
         messagebox.showwarning("Uyarı", "Lütfen kullanıcı adını ve parolanı gir.")
@@ -83,15 +83,15 @@ def save_login_info(username: str, password: str, show_message: bool = True) -> 
 #endregion
 
 
-#region WiFi Connection
+#region WiFi Bağlantısı
 def connect_to_wifi() -> Optional[requests.Response]:
-    """Attempts to log in to the wifi.gsb.gov.tr portal using stored credentials.
+    """Kaydedilmiş kimlik bilgilerini kullanarak wifi.gsb.gov.tr portalına giriş yapmayı dener.
     
-    This function reads the login credentials from login_info.json and sends
-    a POST request to the GSB WiFi login endpoint.
+    Bu işlev, login_info.json'dan giriş bilgilerini okur ve GSB WiFi giriş endpoint'ine
+    bir POST isteği gönderir.
     
-    Returns:
-        Optional[requests.Response]: The server response if successful, None otherwise
+    Döndürür:
+        Optional[requests.Response]: Başarılı olursa sunucu yanıtı, aksi halde None
     """
     try:
         with open("login_info.json", "r", encoding="utf-8") as file:
@@ -117,7 +117,7 @@ def connect_to_wifi() -> Optional[requests.Response]:
         "j_password": password
     }
 
-    # Send login request
+    # Login isteği gönder
     try:
         response = session.post(url, data=form, timeout=10)
         print_status(response.status_code)

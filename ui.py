@@ -1,9 +1,9 @@
-"""Contains the necessary classes for the user interface.
+"""Kullanıcı arayüzü için gerekli sınıfları içerir.
 
-This module implements the graphical user interface for the GSB WiFi Auto Connect
-application using customtkinter. It includes classes for the main window.
+Bu modül, GSB WiFi Auto Connect uygulaması için customtkinter kullanarak
+kullanıcı arayüzünü oluşturur. Ana pencere için sınıfları içerir.
 """
-#region Imports
+#region Import'lar
 from tkinter import messagebox
 import json
 import os
@@ -19,18 +19,18 @@ from connection import connect_to_wifi, save_login_info, load_login_info
 
 
 class WindowMain:
-    """Creates the main application window with WiFi login functionality.
+    """GSB WiFi giriş işlevselliği ile ana uygulama penceresini oluşturur.
     
-    This class implements the main user interface with login fields and 
-    a connect button for authenticating with the GSB WiFi portal.
+    Bu sınıf, GSB WiFi portalında kimlik doğrulama için giriş alanları ve
+    bir bağlantı düğmesi içeren ana kullanıcı arayüzünü oluşturur.
     """
 
-    #region Initialization
+    #region Başlatma
     def __init__(self, connect_callback: Callable[[], Optional[requests.Response]]):
-        """Initializes the main window with the given connection callback.
+        """Ana pencereyi verilen bağlantı geri çağırma işleviyle başlatır.
         
-        Args:
-            connect_callback: Function to call when attempting to connect to WiFi
+        Argümanlar:
+            connect_callback: WiFi'a bağlanmaya çalışırken çağrılacak işlev
         """
         self.root = ctk.CTk()
         self.root.title("GSB Wifi Auto Connect")
@@ -40,11 +40,11 @@ class WindowMain:
         
         self.image_connect_button_path = "icons/disconnected.png"
         
-        # Social media profiles
+        # Sosyal medya profilleri
         self.github_url = "https://github.com/RaijuMounun"
         self.instagram_url = "https://www.instagram.com/erenzapkinus"
         
-        # Load social media icons
+        # Sosyal medya ikonları
         self.github_icon_path = "icons/github.png"
         self.instagram_icon_path = "icons/instagram.png"
         
@@ -52,14 +52,14 @@ class WindowMain:
         self.load_login_info()
     #endregion
 
-    #region UI Setup
+    #region UI Kurulumu
     def setup_ui(self) -> None:
-        """Sets up the user interface components and layout."""
-        # Frame for login credentials
+        """Kullanıcı arayüzü bileşenlerini ve düzenini ayarlar."""
+        # Giriş bilgileri için çerçeve
         frame_login = ctk.CTkFrame(self.root)
         frame_login.pack(pady=20, padx=20, fill="x")
         
-        # Username label and entry
+        # Kullanıcı adı label ve giriş alanı
         username_label = ctk.CTkLabel(frame_login, text="Kullanıcı Adı:")
         username_label.pack(anchor="w", pady=(10, 0), padx=10)
         
@@ -69,7 +69,7 @@ class WindowMain:
             width=300)
         self.entry_username.pack(pady=(0, 10), padx=10, fill="x")
         
-        # Password label and entry
+        # Parola label ve giriş alanı
         password_label = ctk.CTkLabel(frame_login, text="Parola:")
         password_label.pack(anchor="w", pady=(10, 0), padx=10)
         
@@ -80,14 +80,14 @@ class WindowMain:
             width=300)
         self.entry_password.pack(pady=(0, 10), padx=10, fill="x")
         
-        # Save button
+        # Kaydet düğmesi
         button_save = ctk.CTkButton(
             frame_login, 
             text="Kaydet", 
             command=self.save_login_info_to_file)
         button_save.pack(pady=(10, 20), padx=10)
         
-        # Connection button - Icon only, moderate size with padding for better visibility
+        # Bağlantı düğmesi
         self.image_connect_button = ctk.CTkImage(
             light_image=Image.open(self.image_connect_button_path),
             dark_image=Image.open(self.image_connect_button_path),
@@ -111,13 +111,13 @@ class WindowMain:
         self._setup_social_media()
     #endregion
 
-    #region Social Media Setup
+    #region Sosyal Medya Kısmı Kurulumu
     def _setup_social_media(self) -> None:
-        """Sets up the social media buttons section."""
+        """Sosyal medya düğmeleri bölümünü ayarlar."""
         social_frame = ctk.CTkFrame(self.root, fg_color="transparent")
         social_frame.pack(pady=(5, 10), padx=20, fill="x")
         
-        # Create the social media icons
+        # Sosyal medya ikonlarını oluştur
         github_image = ctk.CTkImage(
             light_image=Image.open(self.github_icon_path),
             dark_image=Image.open(self.github_icon_path),
@@ -130,19 +130,19 @@ class WindowMain:
             size=(24, 24)
         )
         
-        # Social buttons frame (for horizontal layout) - Center aligned
+        # Sosyal butonlar için frame (yatay düzen için) - Merkeze hizalı
         buttons_frame = ctk.CTkFrame(social_frame, fg_color="transparent")
         buttons_frame.pack(pady=(0, 10), fill="x")
         
-        # Create a container frame for button centering
+        # Butonları merkezlemek için container frame oluştur
         center_frame = ctk.CTkFrame(buttons_frame, fg_color="transparent")
         center_frame.pack(expand=True, fill="x")
         
-        # Center the buttons using a label
+        # Butonları merkezlemek için label kullan
         center_label = ctk.CTkLabel(center_frame, text="", fg_color="transparent")
         center_label.pack(side="left", expand=True)
         
-        # GitHub button with icon
+        # GitHub butonu ve ikonu
         github_button = ctk.CTkButton(
             center_frame,
             text="",
@@ -155,7 +155,7 @@ class WindowMain:
             command=lambda: self.open_social_media(self.github_url))
         github_button.pack(side="left", padx=5)
         
-        # Instagram button with icon
+        # Instagram butonu ve ikonu
         instagram_button = ctk.CTkButton(
             center_frame,
             text="",
@@ -168,20 +168,20 @@ class WindowMain:
             command=lambda: self.open_social_media(self.instagram_url))
         instagram_button.pack(side="left", padx=5)
         
-        # Spacer for centering
+        # Merkezleme için spacer
         center_label2 = ctk.CTkLabel(center_frame, text="", fg_color="transparent")
         center_label2.pack(side="left", expand=True)
     #endregion
 
-    #region Social Media Actions
+    #region Sosyal Medya İşlemleri
     def open_social_media(self, url: str) -> None:
-        """Opens the developer's social profiles in the default browser."""
+        """Geliştiricinin sosyal medya profillerini varsayılan tarayıcıda açar."""
         webbrowser.open(url)
     #endregion
 
-    #region Login Information Handling
+    #region Giriş Bilgileri İşleme
     def load_login_info(self) -> None:
-        """Loads saved username and password from the JSON file."""
+        """JSON dosyasından kaydedilmiş kullanıcı adı ve parolayı yükler."""
         login_info = load_login_info()
         self.entry_username.delete(0, 'end')
         self.entry_password.delete(0, 'end')
@@ -189,15 +189,15 @@ class WindowMain:
         self.entry_password.insert(0, login_info.get("password", ""))
 
     def save_login_info_to_file(self) -> None:
-        """Saves the username and password with a confirmation message."""
+        """Kullanıcı adı ve parolayı onay mesajıyla kaydeder."""
         username = self.entry_username.get()
         password = self.entry_password.get()
         save_login_info(username, password, show_message=True)
     #endregion
 
-    #region WiFi Connection Handling
+    #region WiFi Bağlantı İşlemleri
     def connect(self) -> None:
-        """Connects to the Wi-Fi network using the provided credentials."""
+        """Girilen kullanıcı bilgileriyle WiFi ağına bağlanır."""
         username = self.entry_username.get()
         password = self.entry_password.get()
         
@@ -209,10 +209,10 @@ class WindowMain:
                 self.root.quit()
 
     def update_button_image(self, image_path: str) -> None:
-        """Updates the connect button image.
+        """Bağlantı düğmesinin görüntüsünü günceller.
         
-        Args:
-            image_path: Path to the image file
+        Argümanlar:
+            image_path: Görüntü dosyasının yolu
         """
         self.image_connect_button = ctk.CTkImage(
         light_image=Image.open(image_path),
@@ -222,12 +222,12 @@ class WindowMain:
         self.button_connect.configure(image=self.image_connect_button)
     #endregion
 
-    #region Window Management
+    #region Pencere Yönetimi
     def run(self) -> None:
-        """Starts the application by calling the mainloop for the window."""
+        """Pencere ana döngüsünü çağırarak uygulamayı başlatır."""
         self.root.mainloop()
 
     def destroy(self) -> None:
-        """Closes the window and releases resources."""
+        """Pencereyi kapatır ve kaynakları serbest bırakır."""
         self.root.destroy()
     #endregion

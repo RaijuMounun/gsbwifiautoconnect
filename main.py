@@ -1,11 +1,11 @@
-"""GSB WiFi Auto Connect Application.
+"""GSB WiFi Auto Connect Uygulaması.
 
-This application provides a simple GUI for automatically connecting to 
-the GSB dormitory WiFi network. It automatically saves and uses login credentials
-for seamless connectivity.
+Bu uygulama, GSB yurt WiFi ağına otomatik olarak bağlanmak için basit bir
+kullanıcı arayüzü sağlar. Giriş bilgilerini otomatik olarak kaydeder ve
+kullanarak sorunsuz bağlantı sunar.
 
-Example:
-    Simply run the script to start the application:
+Örnek:
+    Sadece script'i çalıştırarak uygulamayı başlatabilirsiniz (exe kullanmıyorsanız):
         $ python main.py
 """
 
