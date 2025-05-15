@@ -81,6 +81,8 @@ Bu sayede anadili Türkçe olanlar için kod daha anlaşılır ve bakımı daha 
 3. Bağlan düğmesine bastığınızda, uygulama otomatik olarak GSB WiFi portalına giriş yapar
 4. Bağlantı başarılı olduğunda, program otomatik olarak kendini kapatır.
 
+-
+
 Kullanıcı bilgilerinizi tutan JSON dosyası .exe dosyasının bulunduğu konuma oluşturuluyor. O yüzden tavsiyem programlarınızı tuttuğunuz klasöre, GsbWifiAutoConnect için de bir klasör oluşturup .exe dosyasını orada tutmanız. Masaüstü kısayolu oluşturmak için: 
    1. .exe dosyasına sağ tıklayın
    2. Açılan pencerede en altta "Daha fazla seçenek göster" tuşuna tıklayın.
