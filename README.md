@@ -1,51 +1,93 @@
-# GSBWifiAutoConnect
+# GSB WiFi Auto Connect
 
-GSBWifiAutoConnect is a Python application that automates the process of connecting to the Wi-Fi network provided by the Ministry of Youth and Sports (Gençlik ve Spor Bakanlığı) for students residing in their dormitories. The Wi-Fi connection process is often tedious, requiring the user to input credentials every time they try to connect. This program streamlines the process, allowing you to connect automatically.
+Bu uygulama, GSB (Gençlik ve Spor Bakanlığı) yurdu internet ağına **otomatik ve hızlı bir şekilde** bağlanmak için geliştirilmiş basit bir arayüz sunar.
 
-## Features
+## Neden Bu Uygulama?
 
-- **Automatic Login:** After entering the correct username and password, the application stores them in a JSON file. You no longer have to manually enter your credentials every time.
-- **Customtkinter GUI:** A simple and intuitive graphical interface built with Python's `customtkinter` library.
-- **Seamless Connection:** Once the credentials are saved, pressing the "Connect" button sends a POST request with your credentials to the Wi-Fi authentication form and connects you automatically.
+Normal şartlarda GSB WiFi'ına bağlanmak oldukça zahmetli bir süreç:
+1. Önce cihazı WiFi'a bağlamanız
+2. Otomatik açılan GSB internet sitesinde kullanıcı adı ve şifre girmeniz 
+3. Açılan sayfada bağlan tuşuna basmanız gerekiyor
 
-## How It Works
+Bu süreç genellikle çok yavaş ilerliyor çünkü:
+- GSB internet altyapısı yavaş çalışıyor
+- Tarayıcılar güvenlik uyarıları göstererek işlemi zorlaştırıyor
+- Her defasında kimlik bilgilerini manuel girmek zaman alıyor
 
-1. **Launch the Application:** The program starts with a "Connect" button in the center of the screen.
-2. **Enter Credentials:** When you click the settings button in the top-right corner, a window will pop up asking for your username and password. These credentials will be saved to a local JSON file for future use.
-3. **Automatic Wi-Fi Connection:** When the credentials are entered correctly, the program will automatically send a POST request with your username and password to the network authentication page, logging you in seamlessly.
+**Bu uygulama ile tüm bu süreci otomatikleştirdim.** 
 
-## Installation
+## Özellikler
 
-If you are not a developer, you can use the bin file on the Releases tab. Open it with WinRar or 7zip and extract the files. Then you are ready to go.
+- Basit ve kullanıcı dostu arayüz
+- Giriş bilgilerini güvenli bir şekilde saklama
+- Tek tıkla WiFi bağlantısı (tarayıcı açmadan)
+- Bağlantı durumu görsel geri bildirimi
+- Hızlı ve otomatik bağlantı süreci
 
+## Kullanım Kılavuzu
 
-1. Clone the repository:
+### Exe Dosyası İle Kullanım (Önerilen)
+
+1. [Releases](https://github.com/RaijuMounun/gsbwifiautoconnect/releases) sayfasından v0.2 sürümünü indirin
+2. İndirdiğiniz .exe dosyasını çalıştırın (Herhangi bir kurulum gerekmez)
+3. Kullanıcı adınızı ve parolanızı girin
+4. Bilgileri kaydetmek için "Save" düğmesine tıklayın
+5. WiFi'a bağlanmak için "Connect" düğmesine tıklayın
+
+**Not**: Exe dosyası tüm gerekli bileşenleri içerir, ayrıca Python veya başka bir program yüklemeniz gerekmez.
+
+### Kaynak Kod İle Geliştirme (Geliştiriciler İçin)
+
+Eğer uygulamayı kendiniz geliştirmek veya değiştirmek istiyorsanız:
+
+#### Gereksinimler
+
+- Python 3.6 veya üstü
+- Aşağıdaki Python paketleri (requirements.txt dosyasında listelenmiştir):
+  - customtkinter>=5.2.0
+  - pillow>=9.0.0
+  - requests>=2.28.0
+
+#### Kurulum Adımları
+
+1. Projeyi bilgisayarınıza indirin:
    ```bash
    git clone https://github.com/RaijuMounun/gsbwifiautoconnect.git
    ```
 
-2. Navigate to the project folder:
-   ```bash
-   cd gsbwifiautoconnect
-   ```
-   
-3. Install the necessary Python dependencies:
+2. Gerekli paketleri yükleyin:
    ```bash
    pip install -r requirements.txt
    ```
-
-## Usage
-Run the application:
-
-  ```bash
-  python main.py
-  ```
-
-On the main screen, click the Settings button to enter your Wi-Fi credentials.
-
-Click connect button to automatically log in to the GSB Wi-Fi.
-
-## Configuration
-The username and password you enter will be saved in a local config.json file for convenience. This file will be created automatically upon the first successful login.
-This file is not encrypted. So, be aware.
    
+3. Uygulamayı çalıştırın:
+   ```bash
+   python main.py
+   ```
+
+
+
+
+## Nasıl Çalışır?
+
+1. Uygulama, GSB WiFi portalıyla doğrudan iletişim kurar, tarayıcı açmaya gerek kalmaz
+2. Kullanıcı bilgileriniz yerel bir JSON dosyasında *şifrelenmeden* saklanır (login_info.json)
+   2,5. Kullanıcı bilgilerinizi tutan JSON dosyası .exe dosyasının bulunduğu konuma oluşturuluyor. O yüzden tavsiyem programlarınızı tuttuğunuz klasöre, GsbWifiAutoConnect için de bir klasör oluşturup .exe dosyasını orada tutmanız. Masaüstü kısayolu oluşturmak için 
+   1- .exe dosyasına sağ tıklayın
+   2- Açılan pencerede en altta "Daha fazla seçenek göster" tuşuna tıklayın.
+   3- Açılan pencerede 'Gönder' kısmına gelin.
+   4- Açılan küçük pencerede "Masaüstü (kısayol oluştur)" seçeneğini seçin.
+3. Bağlan düğmesine bastığınızda, uygulama otomatik olarak GSB WiFi portalına giriş yapar
+4. Bağlantı başarılı olduğunda, düğme rengi değişerek sizi bilgilendirir
+
+## Lisans
+
+Bu proje açık kaynak olarak paylaşılmıştır.
+
+## Geliştirici
+
+Eren Keskinoğlu
+
+[Instagram](https://www.instagram.com/erenzapkinus) [@erenzapkinus]
+
+
