@@ -3,12 +3,16 @@
 This module provides functionality to authenticate with the GSB WiFi portal
 through its login endpoint.
 """
+#region Imports
 import json
 from tkinter import messagebox
 import requests
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Tuple, Callable
+from PIL import Image
+#endregion
 
 
+#region Status Handling
 def print_status(statuscode: int) -> None:
     """Prints a user-friendly message based on the HTTP status code.
     
@@ -28,8 +32,58 @@ def print_status(statuscode: int) -> None:
         503: "Service Unavailable"
     }
     messagebox.showinfo("Info", statuscodes.get(statuscode, f"Unknown Status: {statuscode}"))
+#endregion
 
 
+#region Login Info Management
+def load_login_info() -> Dict[str, str]:
+    """Loads saved username and password from the JSON file.
+    
+    Returns:
+        Dict[str, str]: Dictionary containing username and password
+    """
+    try:
+        with open("login_info.json", "r", encoding="utf-8") as file:
+            login_info: Dict[str, str] = json.load(file)
+            return login_info
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"username": "", "password": ""}
+
+
+def save_login_info(username: str, password: str, show_message: bool = True) -> bool:
+    """Saves the username and password to the JSON file.
+    
+    Args:
+        username: The username to save
+        password: The password to save
+        show_message: Whether to show a success message
+        
+    Returns:
+        bool: True if credentials were saved successfully, False otherwise
+    """
+    if not username or not password:
+        messagebox.showwarning("Warning", "Please enter both username and password!")
+        return False
+        
+    login_info = {
+        "username": username,
+        "password": password
+    }
+
+    try:
+        with open("login_info.json", "w", encoding="utf-8") as file:
+            json.dump(login_info, file)
+        if show_message:
+            messagebox.showinfo("Info", "Username and password saved!")
+        return True
+    except IOError as e:
+        error_msg = f"Could not save credentials: {e}" if show_message else "Could not save credentials"
+        messagebox.showerror("Error", error_msg)
+        return False
+#endregion
+
+
+#region WiFi Connection
 def connect_to_wifi() -> Optional[requests.Response]:
     """Attempts to log in to the wifi.gsb.gov.tr portal using stored credentials.
     
@@ -39,7 +93,6 @@ def connect_to_wifi() -> Optional[requests.Response]:
     Returns:
         Optional[requests.Response]: The server response if successful, None otherwise
     """
-    # Read username and password from login_info.json
     try:
         with open("login_info.json", "r", encoding="utf-8") as file:
             login_info: Dict[str, str] = json.load(file)
@@ -57,7 +110,6 @@ def connect_to_wifi() -> Optional[requests.Response]:
         messagebox.showerror("Error", "Login information file is invalid")
         return None
 
-    # Create session and login form data
     session = requests.Session()
     url = "https://wifi.gsb.gov.tr/login/j_spring_security_check"
     form = {
@@ -79,3 +131,4 @@ def connect_to_wifi() -> Optional[requests.Response]:
     except requests.exceptions.RequestException as e:
         messagebox.showerror("Error", f"Connection error: {e}")
         return None
+#endregion
