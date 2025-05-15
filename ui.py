@@ -60,30 +60,30 @@ class WindowMain:
         frame_login.pack(pady=20, padx=20, fill="x")
         
         # Username label and entry
-        username_label = ctk.CTkLabel(frame_login, text="Username:")
+        username_label = ctk.CTkLabel(frame_login, text="Kullanıcı Adı:")
         username_label.pack(anchor="w", pady=(10, 0), padx=10)
         
         self.entry_username = ctk.CTkEntry(
             frame_login,
-            placeholder_text="Enter your username",
+            placeholder_text="Kullanıcı adın",
             width=300)
         self.entry_username.pack(pady=(0, 10), padx=10, fill="x")
         
         # Password label and entry
-        password_label = ctk.CTkLabel(frame_login, text="Password:")
+        password_label = ctk.CTkLabel(frame_login, text="Parola:")
         password_label.pack(anchor="w", pady=(10, 0), padx=10)
         
         self.entry_password = ctk.CTkEntry(
             frame_login,
             show="*",
-            placeholder_text="Enter your password",
+            placeholder_text="Parolan",
             width=300)
         self.entry_password.pack(pady=(0, 10), padx=10, fill="x")
         
         # Save button
         button_save = ctk.CTkButton(
             frame_login, 
-            text="Save", 
+            text="Kaydet", 
             command=self.save_login_info_to_file)
         button_save.pack(pady=(10, 20), padx=10)
         

@@ -23,15 +23,15 @@ def print_status(statuscode: int) -> None:
         None
     """
     statuscodes: Dict[int, str] = {
-        200: "Success",
-        302: "Redirect",
-        401: "Unauthorized",
-        403: "Forbidden",
-        404: "Not Found",
-        500: "Server Error",
-        503: "Service Unavailable"
+        200: "Başarılı",
+        302: "Yönlendirme",
+        401: "Yetkisiz Erişim",
+        403: "Erişim Engellendi",
+        404: "Sayfa Bulunamadı",
+        500: "Sunucu Hatası",
+        503: "Hizmet Kullanılamıyor"
     }
-    messagebox.showinfo("Info", statuscodes.get(statuscode, f"Unknown Status: {statuscode}"))
+    messagebox.showinfo("Bilgi", statuscodes.get(statuscode, f"Bilinmeyen Durum: {statuscode}"))
 #endregion
 
 
@@ -62,7 +62,7 @@ def save_login_info(username: str, password: str, show_message: bool = True) -> 
         bool: True if credentials were saved successfully, False otherwise
     """
     if not username or not password:
-        messagebox.showwarning("Warning", "Please enter both username and password!")
+        messagebox.showwarning("Uyarı", "Lütfen kullanıcı adını ve parolanı gir.")
         return False
         
     login_info = {
@@ -74,11 +74,11 @@ def save_login_info(username: str, password: str, show_message: bool = True) -> 
         with open("login_info.json", "w", encoding="utf-8") as file:
             json.dump(login_info, file)
         if show_message:
-            messagebox.showinfo("Info", "Username and password saved!")
+            messagebox.showinfo("Bilgi", "Kullanıcı adı ve parola kaydedildi.")
         return True
     except IOError as e:
-        error_msg = f"Could not save credentials: {e}" if show_message else "Could not save credentials"
-        messagebox.showerror("Error", error_msg)
+        error_msg = f"Kullanıcı bilgileri kaydedilemedi: {e}" if show_message else "Kullanıcı bilgileri kaydedilemedi."
+        messagebox.showerror("Hata", error_msg)
         return False
 #endregion
 
@@ -100,14 +100,14 @@ def connect_to_wifi() -> Optional[requests.Response]:
             password = login_info.get("password", "")
             
             if not username or not password:
-                messagebox.showerror("Error", "Username or password is empty")
+                messagebox.showerror("Hata", "Kullanıcı adı veya parola boş")
                 return None
                 
     except FileNotFoundError:
-        messagebox.showerror("Error", "Login information file not found")
+        messagebox.showerror("Hata", "Giriş bilgileri dosyası bulunamadı")
         return None
     except json.JSONDecodeError:
-        messagebox.showerror("Error", "Login information file is invalid")
+        messagebox.showerror("Hata", "Giriş bilgileri dosyası geçersiz")
         return None
 
     session = requests.Session()
@@ -123,12 +123,12 @@ def connect_to_wifi() -> Optional[requests.Response]:
         print_status(response.status_code)
         return response
     except requests.exceptions.Timeout:
-        messagebox.showerror("Error", "Connection timed out")
+        messagebox.showerror("Hata", "Bağlantı zaman aşımına uğradı")
         return None
     except requests.exceptions.ConnectionError:
-        messagebox.showerror("Error", "Could not connect to server")
+        messagebox.showerror("Hata", "Sunucuya bağlanılamadı")
         return None
     except requests.exceptions.RequestException as e:
-        messagebox.showerror("Error", f"Connection error: {e}")
+        messagebox.showerror("Hata", f"Bağlantı hatası: {e}")
         return None
 #endregion
