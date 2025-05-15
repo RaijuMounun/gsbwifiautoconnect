@@ -18,6 +18,17 @@ from connection import connect_to_wifi, save_login_info, load_login_info
 #endregion
 
 
+def resource_path(relative_path):
+    """PyInstaller ile paketlenmiş uygulamalar için kaynak dosya yolunu alır."""
+    try:
+        # PyInstaller oluşturduğu geçici klasördeki yolu _MEIPASS olarak saklar
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 class WindowMain:
     """GSB WiFi giriş işlevselliği ile ana uygulama penceresini oluşturur.
     
@@ -38,15 +49,15 @@ class WindowMain:
 
         self.connect_callback = connect_callback
         
-        self.image_connect_button_path = "icons/disconnected.png"
+        self.image_connect_button_path = resource_path("icons/disconnected.png")
         
         # Sosyal medya profilleri
         self.github_url = "https://github.com/RaijuMounun"
         self.instagram_url = "https://www.instagram.com/erenzapkinus"
         
         # Sosyal medya ikonları
-        self.github_icon_path = "icons/github.png"
-        self.instagram_icon_path = "icons/instagram.png"
+        self.github_icon_path = resource_path("icons/github.png")
+        self.instagram_icon_path = resource_path("icons/instagram.png")
         
         self.setup_ui()
         self.load_login_info()
@@ -204,7 +215,7 @@ class WindowMain:
         if save_login_info(username, password, show_message=False):
             response = self.connect_callback()
             if response and response.status_code == 200:
-                self.image_connect_button_path = "icons/connected.png"
+                self.image_connect_button_path = resource_path("icons/connected.png")
                 self.update_button_image(self.image_connect_button_path)
                 self.root.quit()
 
