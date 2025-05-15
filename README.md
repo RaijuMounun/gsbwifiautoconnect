@@ -20,7 +20,7 @@ Bu süreç genellikle çok yavaş ilerliyor çünkü:
 
 - Tamamen Türkçe kullanıcı arayüzü
 - Basit ve kullanıcı dostu arayüz
-- Giriş bilgilerini güvenli bir şekilde saklama
+- Giriş bilgilerini kaydetme
 - Tek tıkla WiFi bağlantısı (tarayıcı açmadan)
 - Bağlantı durumu görsel geri bildirimi
 - Hızlı ve otomatik bağlantı süreci
@@ -77,8 +77,8 @@ Bu sayede anadili Türkçe olanlar için kod daha anlaşılır ve bakımı daha 
 ## Nasıl Çalışır?
 
 1. Uygulama, GSB WiFi portalıyla doğrudan iletişim kurar, tarayıcı açmaya gerek kalmaz
-2. Kullanıcı bilgileriniz yerel bir JSON dosyasında *şifrelenmeden* saklanır (login_info.json)
-   2,5. Kullanıcı bilgilerinizi tutan JSON dosyası .exe dosyasının bulunduğu konuma oluşturuluyor. O yüzden tavsiyem programlarınızı tuttuğunuz klasöre, GsbWifiAutoConnect için de bir klasör oluşturup .exe dosyasını orada tutmanız. Masaüstü kısayolu oluşturmak için 
+2. Kullanıcı bilgileriniz yerel bir JSON dosyasında *şifrelenmeden* saklanır (login_info.json). Giriş bilgileriniz sadece sizin bilgisayarınızda saklanır. Başka herhangi bir yere gönderilmez.
+   2,5. Kullanıcı bilgilerinizi tutan JSON dosyası .exe dosyasının bulunduğu konuma oluşturuluyor. O yüzden tavsiyem programlarınızı tuttuğunuz klasöre, GsbWifiAutoConnect için de bir klasör oluşturup .exe dosyasını orada tutmanız. Masaüstü kısayolu oluşturmak için: 
    1- .exe dosyasına sağ tıklayın
    2- Açılan pencerede en altta "Daha fazla seçenek göster" tuşuna tıklayın.
    3- Açılan pencerede 'Gönder' kısmına gelin.
