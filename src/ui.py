@@ -14,7 +14,7 @@ from pathlib import Path
 from PIL import Image
 import customtkinter as ctk
 import requests
-from connection import connect_to_wifi, save_login_info, load_login_info
+from src.connection import connect_to_wifi, save_login_info, load_login_info
 #endregion
 
 

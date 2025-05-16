@@ -9,8 +9,8 @@ kullanarak sorunsuz bağlantı sunar.
         $ python main.py
 """
 
-from ui import WindowMain
-from connection import connect_to_wifi
+from src.ui import WindowMain
+from src.connection import connect_to_wifi
 
 if __name__ == "__main__":
     ui = WindowMain(connect_to_wifi)
