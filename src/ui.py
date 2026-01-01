@@ -1,67 +1,57 @@
-"""Kullanıcı arayüzü için gerekli sınıfları içerir.
-
-Bu modül, GSB WiFi Auto Connect uygulaması için customtkinter kullanarak
-kullanıcı arayüzünü oluşturur. Ana pencere için sınıfları içerir.
+"""
+Kullanıcı arayüzü modülü.
+Backend'den fırlatılan hataları yakalar ve kullanıcıya gösterir.
 """
 #region Import'lar
-from tkinter import messagebox
 import json
 import os
 import sys
 import webbrowser
-from typing import Callable, Dict, Optional, Any, Union
+from typing import Callable, Optional
 from pathlib import Path
 from PIL import Image
+
+# UI Kütüphaneleri
 import customtkinter as ctk
+from tkinter import messagebox
+
 import requests
-from src.connection import connect_to_wifi, save_login_info, load_login_info
+
+# Backend bağlantısı
+from connection import connect_to_wifi, WifiConnectionError, AuthenticationError, NetworkTimeoutError
 #endregion
 
 
 def resource_path(relative_path):
-    """PyInstaller ile paketlenmiş uygulamalar için kaynak dosya yolunu alır."""
+    """PyInstaller için kaynak yolunu bulur."""
     try:
-        # PyInstaller oluşturduğu geçici klasördeki yolu _MEIPASS olarak saklar
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 
 class WindowMain:
-    """GSB WiFi giriş işlevselliği ile ana uygulama penceresini oluşturur.
-    
-    Bu sınıf, GSB WiFi portalında kimlik doğrulama için giriş alanları ve
-    bir bağlantı düğmesi içeren ana kullanıcı arayüzünü oluşturur.
-    """
-
-    #region Başlatma
-    def __init__(self, connect_callback: Callable[[], Optional[requests.Response]]):
-        """Ana pencereyi verilen bağlantı geri çağırma işleviyle başlatır.
-        
-        Argümanlar:
-            connect_callback: WiFi'a bağlanmaya çalışırken çağrılacak işlev
-        """
+    def __init__(self, connect_callback: Callable[[str, str], requests.Response]):
         self.root = ctk.CTk()
         self.root.title("GSB Wifi Auto Connect")
         self.root.geometry("400x550")
 
         self.connect_callback = connect_callback
         
+        # Görsel yolları
         self.image_connect_button_path = resource_path("icons/disconnected.png")
-        
-        # Sosyal medya profilleri
-        self.github_url = "https://github.com/RaijuMounun"
-        self.instagram_url = "https://www.instagram.com/erenzapkinus"
-        
-        # Sosyal medya ikonları
         self.github_icon_path = resource_path("icons/github.png")
         self.instagram_icon_path = resource_path("icons/instagram.png")
         
+        # Linkler
+        self.github_url = "https://github.com/RaijuMounun"
+        self.instagram_url = "https://www.instagram.com/erenzapkinus"
+        
         self.setup_ui()
-        self.load_login_info()
-    #endregion
+        
+        # Başlangıçta verileri yükle
+        self._load_creds_to_ui()
 
     #region UI Kurulumu
     def setup_ui(self) -> None:
@@ -95,7 +85,7 @@ class WindowMain:
         button_save = ctk.CTkButton(
             frame_login, 
             text="Kaydet", 
-            command=self.save_login_info_to_file)
+            command=self.save_creds_from_ui) # Artık sınıf içindeki yeni metoda gidiyor
         button_save.pack(pady=(10, 20), padx=10)
         
         # Bağlantı düğmesi
@@ -141,19 +131,16 @@ class WindowMain:
             size=(24, 24)
         )
         
-        # Sosyal butonlar için frame (yatay düzen için) - Merkeze hizalı
+        # Sosyal butonlar için frame
         buttons_frame = ctk.CTkFrame(social_frame, fg_color="transparent")
         buttons_frame.pack(pady=(0, 10), fill="x")
         
-        # Butonları merkezlemek için container frame oluştur
         center_frame = ctk.CTkFrame(buttons_frame, fg_color="transparent")
         center_frame.pack(expand=True, fill="x")
         
-        # Butonları merkezlemek için label kullan
-        center_label = ctk.CTkLabel(center_frame, text="", fg_color="transparent")
-        center_label.pack(side="left", expand=True)
+        ctk.CTkLabel(center_frame, text="", fg_color="transparent").pack(side="left", expand=True)
         
-        # GitHub butonu ve ikonu
+        # GitHub butonu
         github_button = ctk.CTkButton(
             center_frame,
             text="",
@@ -166,7 +153,7 @@ class WindowMain:
             command=lambda: self.open_social_media(self.github_url))
         github_button.pack(side="left", padx=5)
         
-        # Instagram butonu ve ikonu
+        # Instagram butonu
         instagram_button = ctk.CTkButton(
             center_frame,
             text="",
@@ -179,66 +166,94 @@ class WindowMain:
             command=lambda: self.open_social_media(self.instagram_url))
         instagram_button.pack(side="left", padx=5)
         
-        # Merkezleme için spacer
-        center_label2 = ctk.CTkLabel(center_frame, text="", fg_color="transparent")
-        center_label2.pack(side="left", expand=True)
+        ctk.CTkLabel(center_frame, text="", fg_color="transparent").pack(side="left", expand=True)
     #endregion
 
-    #region Sosyal Medya İşlemleri
+    #region Yardımcı Metodlar
     def open_social_media(self, url: str) -> None:
-        """Geliştiricinin sosyal medya profillerini varsayılan tarayıcıda açar."""
         webbrowser.open(url)
-    #endregion
-
-    #region Giriş Bilgileri İşleme
-    def load_login_info(self) -> None:
-        """JSON dosyasından kaydedilmiş kullanıcı adı ve parolayı yükler."""
-        login_info = load_login_info()
-        self.entry_username.delete(0, 'end')
-        self.entry_password.delete(0, 'end')
-        self.entry_username.insert(0, login_info.get("username", ""))
-        self.entry_password.insert(0, login_info.get("password", ""))
-
-    def save_login_info_to_file(self) -> None:
-        """Kullanıcı adı ve parolayı onay mesajıyla kaydeder."""
-        username = self.entry_username.get()
-        password = self.entry_password.get()
-        save_login_info(username, password, show_message=True)
-    #endregion
-
-    #region WiFi Bağlantı İşlemleri
-    def connect(self) -> None:
-        """Girilen kullanıcı bilgileriyle WiFi ağına bağlanır."""
-        username = self.entry_username.get()
-        password = self.entry_password.get()
-        
-        if save_login_info(username, password, show_message=False):
-            response = self.connect_callback()
-            if response and response.status_code == 200:
-                self.image_connect_button_path = resource_path("icons/connected.png")
-                self.update_button_image(self.image_connect_button_path)
-                self.root.quit()
 
     def update_button_image(self, image_path: str) -> None:
-        """Bağlantı düğmesinin görüntüsünü günceller.
-        
-        Argümanlar:
-            image_path: Görüntü dosyasının yolu
-        """
+        """Bağlantı düğmesinin görüntüsünü günceller."""
         self.image_connect_button = ctk.CTkImage(
-        light_image=Image.open(image_path),
-        dark_image=Image.open(image_path),
-        size=(100, 100)
+            light_image=Image.open(image_path),
+            dark_image=Image.open(image_path),
+            size=(100, 100)
         )
         self.button_connect.configure(image=self.image_connect_button)
     #endregion
 
+    #region Veri Yönetimi (Geçici - Phase 2'de Keyring olacak)
+    def _load_creds_to_ui(self):
+        """Başlangıçta JSON'dan veriyi okuyup kutucuklara yazar."""
+        try:
+            with open("login_info.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                self.entry_username.delete(0, 'end')
+                self.entry_password.delete(0, 'end')
+                self.entry_username.insert(0, data.get("username", ""))
+                self.entry_password.insert(0, data.get("password", ""))
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass 
+
+    def save_creds_from_ui(self, show_msg=True) -> bool:
+        """Kutucuklardaki veriyi JSON dosyasına yazar."""
+        u = self.entry_username.get()
+        p = self.entry_password.get()
+        
+        if not u or not p:
+            if show_msg: messagebox.showwarning("Eksik Bilgi", "Kullanıcı adı ve parola gerekli.")
+            return False
+            
+        try:
+            with open("login_info.json", "w", encoding="utf-8") as f:
+                json.dump({"username": u, "password": p}, f)
+            if show_msg:
+                messagebox.showinfo("Başarılı", "Bilgiler kaydedildi.")
+            return True
+        except Exception as e:
+            messagebox.showerror("Hata", f"Kaydedilemedi: {e}")
+            return False
+    #endregion
+
+    #region WiFi Bağlantı İşlemleri
+    def connect(self) -> None:
+        """Yeni nesil bağlantı fonksiyonu."""
+        # 1. UI'dan veriyi al
+        username = self.entry_username.get()
+        password = self.entry_password.get()
+        
+        # 2. Önce kaydetmeyi dene 
+        if not self.save_creds_from_ui(show_msg=False):
+            return
+
+        # 3. Backend'i çağır ve hataları dinle
+        try:
+            response = self.connect_callback(username, password)
+            
+            if response:
+                self.image_connect_button_path = resource_path("icons/connected.png")
+                self.update_button_image(self.image_connect_button_path) 
+                messagebox.showinfo("Başarılı", "GSB WiFi ağına giriş yapıldı!")
+                self.root.quit()
+
+        except AuthenticationError:
+            messagebox.showerror("Giriş Başarısız", "Şifre veya kullanıcı adı hatalı.")
+            
+        except NetworkTimeoutError:
+            messagebox.showwarning("Bağlantı Sorunu", "Sunucu cevap vermiyor. WiFi'a bağlı mısın?")
+            
+        except WifiConnectionError as e:
+            messagebox.showerror("Hata", f"Beklenmeyen bir sorun: {str(e)}")
+            
+        except Exception as e:
+            messagebox.showerror("Kritik Hata", f"Kod hatası: {str(e)}")
+    #endregion
+
     #region Pencere Yönetimi
     def run(self) -> None:
-        """Pencere ana döngüsünü çağırarak uygulamayı başlatır."""
         self.root.mainloop()
 
     def destroy(self) -> None:
-        """Pencereyi kapatır ve kaynakları serbest bırakır."""
         self.root.destroy()
     #endregion
