@@ -1,134 +1,75 @@
-"""Bu modül wifi.gsb.gov.tr'ye giriş yapmayı sağlar.
-
-Bu modül, GSB WiFi portalına giriş endpoint'i aracılığıyla kimlik doğrulama 
-işlevselliğini sağlar.
 """
-#region Import'lar
-import json
-from tkinter import messagebox
+Bu modül GSB WiFi portalına bağlantı mantığını (Business Logic) içerir.
+"""
 import requests
-from typing import Dict, Optional, Union, Tuple, Callable
-from PIL import Image
-#endregion
+from typing import Optional
+
+# Custom Exceptions
+class WifiConnectionError(Exception):
+    """Genel bağlantı hataları için temel sınıf."""
+    pass
+
+class AuthenticationError(WifiConnectionError):
+    """Kullanıcı adı veya şifre hatalıysa fırlatılır."""
+    pass
+
+class NetworkTimeoutError(WifiConnectionError):
+    """Sunucuya ulaşılamadığında fırlatılır."""
+    pass
 
 
-#region Durum İşleme
-def print_status(statuscode: int) -> None:
-    """HTTP durum koduna göre kullanıcı dostu bir mesaj yazdırır.
+def connect_to_wifi(username: str, password: str) -> requests.Response:
+    """
+    Verilen kimlik bilgileriyle GSB WiFi portalına bağlanır.
     
     Argümanlar:
-        statuscode: Sunucudan dönen HTTP durum kodu
+        username (str): Kullanıcı adı
+        password (str): Parola
         
     Döndürür:
-        None
-    """
-    statuscodes: Dict[int, str] = {
-        200: "Başarılı",
-        302: "Yönlendirme",
-        401: "Yetkisiz Erişim",
-        403: "Erişim Engellendi",
-        404: "Sayfa Bulunamadı",
-        500: "Sunucu Hatası",
-        503: "Hizmet Kullanılamıyor"
-    }
-    messagebox.showinfo("Bilgi", statuscodes.get(statuscode, f"Bilinmeyen Durum: {statuscode}"))
-#endregion
-
-
-#region Giriş Bilgileri Yönetimi
-def load_login_info() -> Dict[str, str]:
-    """JSON dosyasından kaydedilmiş kullanıcı adı ve parolayı yükler.
-    
-    Döndürür:
-        Dict[str, str]: Kullanıcı adı ve parola içeren dictionary
-    """
-    try:
-        with open("login_info.json", "r", encoding="utf-8") as file:
-            login_info: Dict[str, str] = json.load(file)
-            return login_info
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {"username": "", "password": ""}
-
-
-def save_login_info(username: str, password: str, show_message: bool = True) -> bool:
-    """Kullanıcı adı ve parolayı JSON dosyasına kaydeder.
-    
-    Argümanlar:
-        username: Kaydedilecek kullanıcı adı
-        password: Kaydedilecek parola
-        show_message: Başarı mesajı gösterilip gösterilmeyeceği
+        requests.Response: Başarılı sunucu yanıtı
         
-    Döndürür:
-        bool: Kimlik bilgileri başarıyla kaydedildiyse True, aksi halde False
+    Hata Fırlatır (Raises):
+        AuthenticationError: Giriş başarısızsa (401, 403 vb.)
+        NetworkTimeoutError: Zaman aşımı olursa
+        WifiConnectionError: Diğer bağlantı hataları
     """
+    
+    # Validation (Doğrulama) Logic Katmanında yapılır
     if not username or not password:
-        messagebox.showwarning("Uyarı", "Lütfen kullanıcı adını ve parolanı gir.")
-        return False
-        
-    login_info = {
-        "username": username,
-        "password": password
-    }
-
-    try:
-        with open("login_info.json", "w", encoding="utf-8") as file:
-            json.dump(login_info, file)
-        if show_message:
-            messagebox.showinfo("Bilgi", "Kullanıcı adı ve parola kaydedildi.")
-        return True
-    except IOError as e:
-        error_msg = f"Kullanıcı bilgileri kaydedilemedi: {e}" if show_message else "Kullanıcı bilgileri kaydedilemedi."
-        messagebox.showerror("Hata", error_msg)
-        return False
-#endregion
-
-
-#region WiFi Bağlantısı
-def connect_to_wifi() -> Optional[requests.Response]:
-    """Kaydedilmiş kimlik bilgilerini kullanarak wifi.gsb.gov.tr portalına giriş yapmayı dener.
-    
-    Bu işlev, login_info.json'dan giriş bilgilerini okur ve GSB WiFi giriş endpoint'ine
-    bir POST isteği gönderir.
-    
-    Döndürür:
-        Optional[requests.Response]: Başarılı olursa sunucu yanıtı, aksi halde None
-    """
-    try:
-        with open("login_info.json", "r", encoding="utf-8") as file:
-            login_info: Dict[str, str] = json.load(file)
-            username = login_info.get("username", "")
-            password = login_info.get("password", "")
-            
-            if not username or not password:
-                messagebox.showerror("Hata", "Kullanıcı adı veya parola boş")
-                return None
-                
-    except FileNotFoundError:
-        messagebox.showerror("Hata", "Giriş bilgileri dosyası bulunamadı")
-        return None
-    except json.JSONDecodeError:
-        messagebox.showerror("Hata", "Giriş bilgileri dosyası geçersiz")
-        return None
+        raise ValueError("Kullanıcı adı veya parola boş olamaz.")
 
     session = requests.Session()
+    # TODO: URL sabitleri normalde bir config dosyasında durmalı ama şimdilik burada kalsın.
     url = "https://wifi.gsb.gov.tr/login/j_spring_security_check"
-    form = {
+    
+    form_data = {
         "j_username": username,
         "j_password": password
     }
 
-    # Login isteği gönder
     try:
-        response = session.post(url, data=form, timeout=10)
-        print_status(response.status_code)
-        return response
+        # verify=False, bazen yurt ağlarında SSL sertifika sorunları olabildiği için eklenebilir
+        # ama güvenlik için True olması iyidir. Şimdilik standart bırakıyoruz.
+        response = session.post(url, data=form_data, timeout=10)
+        
+        # HTTP Hata kodlarını kontrol et ve Yorumla
+        if response.status_code == 200:
+            # GSB portalı bazen başarısız girişte de 200 dönebilir, 
+            # içeriği kontrol etmek gerekebilir ama şimdilik status koda güveniyoruz.
+            return response
+            
+        elif response.status_code in (401, 403):
+            raise AuthenticationError("Kullanıcı adı veya şifre hatalı.")
+            
+        else:
+            raise WifiConnectionError(f"Sunucu beklenmeyen bir kod döndürdü: {response.status_code}")
+
     except requests.exceptions.Timeout:
-        messagebox.showerror("Hata", "Bağlantı zaman aşımına uğradı")
-        return None
+        raise NetworkTimeoutError("Bağlantı zaman aşımına uğradı. WiFi'a bağlı mısın?")
+        
     except requests.exceptions.ConnectionError:
-        messagebox.showerror("Hata", "Sunucuya bağlanılamadı")
-        return None
+        raise WifiConnectionError("Sunucuya bağlanılamadı. İnternet bağlantını kontrol et.")
+        
     except requests.exceptions.RequestException as e:
-        messagebox.showerror("Hata", f"Bağlantı hatası: {e}")
-        return None
-#endregion
+        raise WifiConnectionError(f"Beklenmeyen bir hata oluştu: {str(e)}")
