@@ -1,5 +1,30 @@
+# Python Standard
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Distribution / Build
+build/
+dist/
+*.spec
+
+# IDE / Editor
+.vscode/
+.idea/
+*.code-workspace
+.cursor/
+
+# Application Data
+*.log
+user_preferences.json
 login_info.json
-/build
-/dist
-/.cursor/
-gsbwifiautoconnect.code-workspace
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
